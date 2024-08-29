@@ -1,1 +1,1 @@
-A basic password manager, created using Rust
+A simple password manager, created using Rust
