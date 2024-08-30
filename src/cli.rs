@@ -11,23 +11,27 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
-    Create {
+    CreateFile {
+        #[arg(short, long, default_value = "passwords.json")]
+        file: String,
+    },
+    AddEntry {
         site: String,
         username: String,
         password: String,
     },
-    List {
+    ListEntries {
         site: Option<String>,
     },
-    Remove {
+    RemoveEntry {
         site: String,
     },
-    Edit {
+    EditEntry {
         site: String,
         username: String,
         password: String,
     },
-    Generate {
+    GeneratePassword {
         #[arg(short, long, default_value_t = 16)]
         length: usize,
         #[arg(short, long)]
