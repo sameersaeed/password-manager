@@ -11,6 +11,7 @@ const PBKDF2_ITERATIONS: u32 = 100_000;
 pub struct Key;
 
 impl Key {
+    // extract 256-bit key from a password using PBKDF2-SHA256
     pub fn derive_key(password: &[u8]) -> [u8; 32] {
         let mut key = [0u8; 32];
         pbkdf2_hmac::<Sha256>(password, &[], PBKDF2_ITERATIONS, &mut key);
@@ -18,6 +19,7 @@ impl Key {
         key
     }
 
+    // encrypt data using AES-256-GCM + randomly generated nonce
     pub fn encrypt(data: &[u8], password: &[u8]) -> Vec<u8> {
         let key = Self::derive_key(password);
         let cipher = Aes256Gcm::new(GenericArray::from_slice(&key));
@@ -34,6 +36,7 @@ impl Key {
         result
     }
 
+    // decrypt data using AES-256-GCM, extracting nonce from encrypted data
     pub fn decrypt(encrypted_data: &[u8], password: &[u8]) -> Vec<u8> {
         let key = Self::derive_key(password);
         let cipher = Aes256Gcm::new(GenericArray::from_slice(&key));

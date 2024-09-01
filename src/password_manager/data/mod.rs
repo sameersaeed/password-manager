@@ -22,6 +22,7 @@ pub struct PasswordManager {
 }
 
 impl PasswordManager {
+    // prompt user to enter their encryption key to access their passwords
     pub fn prompt_for_key() -> Vec<u8> {
         println!("Enter your encryption key to access your passwords:");
         let key = read_password().expect("Failed to read key");
@@ -29,6 +30,7 @@ impl PasswordManager {
         key.into_bytes()
     }
 
+    // create new password manager instance using provided filename and encryption passkey
     pub fn new(filename: &str, key: Vec<u8>) -> Self {
         PasswordManager { 
             entries: Vec::new(), 
@@ -37,6 +39,7 @@ impl PasswordManager {
         }    
     }
 
+    // create / write to file to store password data
     pub fn create_new_file(&self) -> io::Result<()> {
         let json = serde_json::to_vec(self).expect("Failed to serialize data");
         let encrypted_content = Key::encrypt(&json, &self.encryption_key);
@@ -45,6 +48,7 @@ impl PasswordManager {
         Ok(())
     }
 
+    // load encrypted password data from file using passkey provided by user
     pub fn load_data(filename: &str, key: Option<Vec<u8>>) -> io::Result<Self> {
         let key = key.expect("You must provide a key to load your encrypted password data.\nIf you do not have a key, you can create a new file using the \"create-file\" command.");
         let decrypted_content = Key::decrypt(&fs::read(filename)?, &key);
@@ -141,6 +145,7 @@ impl PasswordManager {
         }
     }
 
+    // choosing characters for password generation based on user choice
     fn get_character_set(include_special: bool) -> Vec<char> {
         const ALPHANUMERIC: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         const SPECIAL_CHARACTERS: &str = "!@#$%^&*()-_=+[]{};:,.<>?/|";
@@ -154,6 +159,7 @@ impl PasswordManager {
         characters
     }
 
+    // generate a random password based on user input
     pub fn generate_password(&mut self, length: usize, site: Option<String>, include_special: bool) {
         let characters = Self::get_character_set(include_special);
         let mut rng = OsRng;
